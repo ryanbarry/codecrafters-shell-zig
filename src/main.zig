@@ -2,7 +2,7 @@ const std = @import("std");
 
 const Commands = enum { exit, __unknown };
 
-pub fn main() !void {
+pub fn main() !u8 {
     const stdout = std.io.getStdOut().writer();
     const stdin = std.io.getStdIn().reader();
     var buffer: [1024]u8 = undefined;
@@ -10,10 +10,12 @@ pub fn main() !void {
     while (true) {
         try stdout.print("$ ", .{});
         const user_input = try stdin.readUntilDelimiter(&buffer, '\n');
-        const matched = std.meta.stringToEnum(Commands, user_input) orelse .__unknown;
-        switch (matched) {
-            .exit => break,
-            .__unknown => try stdout.print("{s}: command not found\n", .{user_input}),
-        }
+        var split_input = std.mem.splitScalar(u8, user_input, ' ');
+        const first_word = split_input.next().?;
+        const matched_cmd = std.meta.stringToEnum(Commands, first_word) orelse .__unknown;
+        try switch (matched_cmd) {
+            .exit => return std.fmt.parseInt(u8, split_input.next().?, 10),
+            .__unknown => stdout.print("{s}: command not found\n", .{user_input}),
+        };
     }
 }
