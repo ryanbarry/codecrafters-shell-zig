@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const Commands = enum { exit, __unknown };
+const Commands = enum { echo, exit, __unknown };
 
 pub fn main() !u8 {
     const stdout = std.io.getStdOut().writer();
@@ -14,6 +14,7 @@ pub fn main() !u8 {
         const first_word = split_input.next().?;
         const matched_cmd = std.meta.stringToEnum(Commands, first_word) orelse .__unknown;
         try switch (matched_cmd) {
+            .echo => stdout.print("{s}\n", .{split_input.rest()}),
             .exit => return std.fmt.parseInt(u8, split_input.next().?, 10),
             .__unknown => stdout.print("{s}: command not found\n", .{user_input}),
         };
