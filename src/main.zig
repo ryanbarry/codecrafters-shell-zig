@@ -16,7 +16,7 @@ pub fn main() !u8 {
         const maybe_matched_cmd = std.meta.stringToEnum(Commands, first_word);
         if(maybe_matched_cmd) |matched_cmd| {
             switch (matched_cmd) {
-                .echo => try stdout.print("{s}\n", .{split_input.rest()}),
+                .echo => try cmd_echo(split_input, stdout),
                 .exit => return std.fmt.parseInt(u8, split_input.next() orelse "0", 10),
                 .type => {
                     const maybe_cmd_to_type = split_input.next();
@@ -35,6 +35,14 @@ pub fn main() !u8 {
         }
     }
 }
+
+fn cmd_echo(args: std.mem.SplitIterator(u8, std.mem.DelimiterType.scalar), stdout: std.fs.File.Writer) !void {
+    try stdout.print("{s}\n", .{args.rest()});
+}
+
+// fn cmd_type(args: i32, stdout: i32) void {
+
+// }
 
 fn cmdtype(cmd: Commands) CommandType {
     switch(cmd) {
