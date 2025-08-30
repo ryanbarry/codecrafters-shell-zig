@@ -80,13 +80,9 @@ fn search_path(maybe_found_path: []u8, basename: []const u8) !void {
                 const perms = try file.mode();
                 //std.debug.print("file mode: {s}\n", perms);
                 if (perms & 0o1 == 1) {
-                    //std.debug.print("found the binary: '{s}'\n", .{entry.path});
-
-                    // std.mem.copyForwards(u8, maybe_found_path, entry.dir.);
-                    // std.mem.copyForwards(u8, maybe_found_path[dir.len..], "/");
-                    // std.mem.copyForwards(u8, maybe_found_path[dir.len + 1 ..], entry.path);
-                    _ = try entry.dir.realpath(entry.path, maybe_found_path);
-
+                    std.mem.copyForwards(u8, maybe_found_path, dir);
+                    std.mem.copyForwards(u8, maybe_found_path[dir.len..], "/");
+                    std.mem.copyForwards(u8, maybe_found_path[dir.len + 1 ..], entry.path);
                     found_path = true;
                     break;
                 }
